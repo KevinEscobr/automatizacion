@@ -1,4 +1,4 @@
-﻿import os
+import os
 import time
 import pytest
 from selenium import webdriver
@@ -17,11 +17,22 @@ def driver():
     driver.quit()
 
 def test_login_y_agregar_medicina(driver):
-    # 1. Obtener credenciales desde variables de entorno
-    email = os.getenv("QA_EMAIL")
+    # 1. Obtener credenciales
+    #    - El email se lee desde qa_last_email.txt (guardado por test_register.py)
+    #      para usar exactamente el usuario que acaba de ser registrado.
+    #    - Si el archivo no existe, se usa QA_EMAIL como fallback.
+    last_email_file = os.path.join(os.path.dirname(__file__), "qa_last_email.txt")
+    if os.path.exists(last_email_file):
+        with open(last_email_file, "r") as f:
+            email = f.read().strip()
+        print(f"\n[INFO] Email leido desde qa_last_email.txt: {email}")
+    else:
+        email = os.getenv("QA_EMAIL")
+        print(f"\n[INFO] qa_last_email.txt no encontrado, usando QA_EMAIL: {email}")
+
     password = os.getenv("QA_PASSWORD")
 
-    assert email, "La variable de entorno QA_EMAIL no esta definida"
+    assert email, "No se encontro email en qa_last_email.txt ni en QA_EMAIL"
     assert password, "La variable de entorno QA_PASSWORD no esta definida"
 
     # 2. Abrir la pagina

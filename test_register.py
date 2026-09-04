@@ -36,7 +36,7 @@ def _save_last_email(email: str) -> None:
 
 def test_registro_usuario(driver):
     # 1. Obtener credenciales desde variables de entorno ($env:QA_EMAIL y $env:QA_PASSWORD)
-    base_email = os.getenv("QA_EMAIL", "")
+    base_email = os.getenv("QA_EMAIL")
     email = _get_next_email(base_email)
     print(f"\n[INFO] Email usado en esta ejecución: {email}")
     password = os.getenv("QA_PASSWORD")
