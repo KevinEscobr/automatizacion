@@ -1,15 +1,12 @@
-# ── Entorno virtual ──────────────────────────────────────────────────────────
 venv/
 .env
 .env.*
 
-# ── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 
-# ── Pytest ───────────────────────────────────────────────────────────────────
 .pytest_cache/
 .cache/
 htmlcov/
@@ -17,24 +14,19 @@ htmlcov/
 coverage.xml
 *.cover
 
-# ── Selenium / WebDriver ─────────────────────────────────────────────────────
 chromedriver.exe
 geckodriver.exe
 msedgedriver.exe
 screenshots/
 videos/
 
-# ── Archivos generados en ejecucion ──────────────────────────────────────────
-# Contiene el ultimo email registrado (se regenera en cada test_register.py)
+# Archivos generados en ejecucion
 qa_last_email.txt
 
-# ── IDE / Editor ─────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
-
-# ── Sistema operativo ─────────────────────────────────────────────────────────
 Thumbs.db
 Desktop.ini
 .DS_Store

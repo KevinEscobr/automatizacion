@@ -17,10 +17,6 @@ def driver():
     driver.quit()
 
 def test_login_y_agregar_medicina(driver):
-    # 1. Obtener credenciales
-    #    - El email se lee desde qa_last_email.txt (guardado por test_register.py)
-    #      para usar exactamente el usuario que acaba de ser registrado.
-    #    - Si el archivo no existe, se usa QA_EMAIL como fallback.
     last_email_file = os.path.join(os.path.dirname(__file__), "qa_last_email.txt")
     if os.path.exists(last_email_file):
         with open(last_email_file, "r") as f:
@@ -35,36 +31,34 @@ def test_login_y_agregar_medicina(driver):
     assert email, "No se encontro email en qa_last_email.txt ni en QA_EMAIL"
     assert password, "La variable de entorno QA_PASSWORD no esta definida"
 
-    # 2. Abrir la pagina
+    # Abrir la pagina
     driver.get("https://despensalo.cl/")
     wait = WebDriverWait(driver, 15)
 
-    # ─── BLOQUE LOGIN ────────────────────────────────────────────────────────────
-
-    # 3. Hacer click en la pestana Iniciar sesion
+    # Hacer click en la pestana Iniciar sesion
     btn_tab_login = wait.until(
         EC.element_to_be_clickable((By.ID, "authTabLogin"))
     )
     btn_tab_login.click()
 
-    # 4. Localizar campos del formulario de login
+    # Localizar campos del formulario de login
     input_email = wait.until(
         EC.visibility_of_element_located((By.ID, "loginEmail"))
     )
     input_pass = driver.find_element(By.ID, "loginPassword")
     btn_submit = driver.find_element(By.ID, "btnLogin")
 
-    # 5. Ingresar credenciales
+    # Ingresar credenciales
     input_email.clear()
     input_email.send_keys(email)
 
     input_pass.clear()
     input_pass.send_keys(password)
 
-    # 6. Enviar formulario de login
+    # Enviar formulario de login
     btn_submit.click()
 
-    # 7. Validar mensaje de respuesta del login
+    # Validar mensaje de respuesta del login
     auth_msg = wait.until(
         EC.visibility_of_element_located((By.ID, "authMsg"))
     )
@@ -72,31 +66,28 @@ def test_login_y_agregar_medicina(driver):
     print(f"\n[LOGIN] Mensaje de autenticacion: {auth_msg.text}")
     assert auth_msg.is_displayed()
 
-    # ─── BLOQUE AGREGAR MEDICINA ─────────────────────────────────────────────────
 
-    # 8. Navegar a la seccion de medicamentos (data-target="medicineSection")
+    # Navegar a la seccion de medicamentos (data-target="medicineSection")
     btn_medicine_section = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-target="medicineSection"]'))
     )
     btn_medicine_section.click()
     print("\n[NAV] Seccion medicamentos abierta")
 
-    # 9. Esperar que la seccion de medicamentos sea visible
+    # Esperar que la seccion de medicamentos sea visible
     medicine_section = wait.until(
         EC.visibility_of_element_located((By.ID, "medicineSection"))
     )
     assert medicine_section.is_displayed(), "La seccion medicamentos no esta visible"
 
-    # 10. Hacer click en el boton 'Agregar producto' dentro de la seccion
+    # Hacer click en el boton 'Agregar producto' dentro de la seccion
     btn_add = wait.until(
         EC.element_to_be_clickable((By.ID, "btnAddMedicine"))
     )
     btn_add.click()
     print("\n[ACCION] Click en btnAddMedicine realizado")
 
-    # ─── BLOQUE RELLENAR FORMULARIO ──────────────────────────────────────────────
-
-    # 11. Esperar que el campo nombre sea visible (confirma que el formulario abrio)
+    # Esperar que el campo nombre sea visible (confirma que el formulario abrio)
     input_name = wait.until(
         EC.visibility_of_element_located((By.ID, "pName"))
     )
@@ -105,31 +96,31 @@ def test_login_y_agregar_medicina(driver):
     input_name.send_keys("Paracetamol Test")
     print("[FORM] pName ingresado")
 
-    # 13. Marca
+    # Marca
     input_brand = driver.find_element(By.ID, "pBrand")
     input_brand.clear()
     input_brand.send_keys("Laboratorio QA")
     print("[FORM] pBrand ingresado")
 
-    # 14. Tamano / cantidad  (valor negativo para verificar validacion)
+    # Tamano / cantidad  (valor negativo para verificar validacion)
     input_size = driver.find_element(By.ID, "pSize")
     input_size.clear()
     input_size.send_keys("-5")
     print("[FORM] pSize ingresado con valor negativo (-5) para verificar validacion")
 
-    # 15. Fecha de vencimiento
+    # Fecha de vencimiento
     input_expiry = driver.find_element(By.ID, "pExpiry")
     input_expiry.clear()
     input_expiry.send_keys("2025-12-31")
     print("[FORM] pExpiry ingresado")
 
-    # 16. Precio unitario
+    # Precio unitario
     input_price = driver.find_element(By.ID, "pPrice")
     input_price.clear()
     input_price.send_keys("990")
     print("[FORM] pPrice ingresado")
 
-    # 17. Precio total
+    # Precio total
     input_price_total = driver.find_element(By.ID, "pPriceTotal")
     input_price_total.clear()
     input_price_total.send_keys("4950")
@@ -137,12 +128,12 @@ def test_login_y_agregar_medicina(driver):
 
     time.sleep(3)
 
-    # 18. Guardar el producto
+    # Guardar el producto
     btn_save = wait.until(
         EC.element_to_be_clickable((By.ID, "btnSaveProduct"))
     )
     btn_save.click()
     print("\n[ACCION] Click en btnSaveProduct realizado")
 
-    # 19. Pausa de visualizacion para ver el resultado
+    # Pausa de visualizacion para ver el resultado
     time.sleep(15)

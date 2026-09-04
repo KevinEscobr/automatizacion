@@ -35,23 +35,23 @@ def _save_last_email(email: str) -> None:
 
 
 def test_registro_usuario(driver):
-    # 1. Obtener credenciales desde variables de entorno ($env:QA_EMAIL y $env:QA_PASSWORD)
+    # Obtener credenciales desde variables de entorno ($env:QA_EMAIL y $env:QA_PASSWORD)
     base_email = os.getenv("QA_EMAIL")
     email = _get_next_email(base_email)
     print(f"\n[INFO] Email usado en esta ejecución: {email}")
     password = os.getenv("QA_PASSWORD")
 
-    # 2. Abrir la página
+    # Abrir la página
     driver.get("https://despensalo.cl/")
     wait = WebDriverWait(driver, 15)
 
-    # 3. Dar click en la pestaña 'Crear cuenta' / Registrarse
+    # Dar click en la pestaña 'Crear cuenta' / Registrarse
     btn_tab_register = wait.until(
         EC.element_to_be_clickable((By.ID, "authTabRegister"))
     )
     btn_tab_register.click()
 
-    # 4. Localizar campos del formulario de registro
+    # Localizar campos del formulario de registro
     input_email = wait.until(
         EC.visibility_of_element_located((By.ID, "registerEmail"))
     )
@@ -59,7 +59,7 @@ def test_registro_usuario(driver):
     input_pass2 = driver.find_element(By.ID, "registerPassword2")
     btn_submit = driver.find_element(By.ID, "btnRegister")
 
-    # 5. Ingresar datos
+    # Ingresar datos
     input_email.clear()
     input_email.send_keys(email)
 
@@ -69,10 +69,10 @@ def test_registro_usuario(driver):
     input_pass2.clear()
     input_pass2.send_keys(password)
 
-    # 6. Enviar formulario de registro
+    # Enviar formulario de registro
     btn_submit.click()
 
-    # 7. Validar mensaje de respuesta en la web
+    # Validar mensaje de respuesta en la web
     auth_msg = wait.until(
         EC.visibility_of_element_located((By.ID, "authMsg"))
     )
@@ -80,5 +80,5 @@ def test_registro_usuario(driver):
     print(f"\n[UI] Mensaje obtenido de la web: {auth_msg.text}")
     assert auth_msg.is_displayed()
 
-    # 8. Pausa de visualización
+    # Pausa de visualización
     time.sleep(10)
