@@ -81,4 +81,4 @@ def test_registro_usuario(driver):
     assert auth_msg.is_displayed()
 
     # Pausa de visualización
-    time.sleep(10)
+    time.sleep(2)

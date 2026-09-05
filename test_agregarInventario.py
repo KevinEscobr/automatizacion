@@ -116,14 +116,14 @@ def test_login_y_agregar_inventario(driver):
     # Tamaño / cantidad  (valor valido positivo)
     input_size = driver.find_element(By.ID, "pSize")
     input_size.clear()
-    input_size.send_keys("-5")
-    print("[FORM] pSize ingresado con valor negativo (-5) para verificar validacion de error")
+    input_size.send_keys("-2147483648")
+    print("[FORM] pSize ingresado con el entero negativo mas grande posible (-2147483648)")
 
-    # Fecha de vencimiento
+    # Fecha de vencimiento ya vencida (prueba de validacion de fecha)
     input_expiry = driver.find_element(By.ID, "pExpiry")
     input_expiry.clear()
-    input_expiry.send_keys("2026-06-30")
-    print("[FORM] pExpiry ingresado")
+    input_expiry.send_keys("2000-01-01")
+    print("[FORM] pExpiry ingresado con fecha vencida (2000-01-01)")
 
     # Precio unitario
     input_price = driver.find_element(By.ID, "pPrice")
