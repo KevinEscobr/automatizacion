@@ -11,7 +11,7 @@ from selenium.webdriver.chrome.options import Options
 @pytest.fixture
 def driver():
     options = Options()
-    options.add_argument("--start-maximized")
+    options.add_argument("--window-size=1366,768")
 
     driver = webdriver.Chrome(options=options)
     yield driver
@@ -33,6 +33,7 @@ def test_login_y_agregar_medicina(driver):
         print(f"\n[INFO] qa_last_email.txt no encontrado, usando QA_EMAIL: {email}")
 
     print(f"[INFO] Sufijo medicina esta ejecucion: {med_num}")
+    print(f"[INFO] Resolución: 1366x768")
     password = os.getenv("QA_PASSWORD")
 
     assert email, "No se encontro email en qa_last_email.txt ni en QA_EMAIL"

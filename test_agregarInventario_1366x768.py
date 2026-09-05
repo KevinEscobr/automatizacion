@@ -11,31 +11,37 @@ from selenium.webdriver.chrome.options import Options
 @pytest.fixture
 def driver():
     options = Options()
-    options.add_argument("--start-maximized")
+    options.add_argument("--window-size=1366,768")
 
     driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
 
-def _get_next_medicine_suffix() -> str:
+
+def _get_last_email() -> str:
+    last_file = os.path.join(os.path.dirname(__file__), "qa_last_email.txt")
+    if os.path.exists(last_file):
+        with open(last_file, "r") as f:
+            email = f.read().strip()
+            if email:
+                return email
+    # Fallback: usar QA_EMAIL directo si no hay archivo
+    return os.getenv("QA_EMAIL", "")
+
+
+def _get_next_product_suffix() -> str:
     return uuid.uuid4().hex[:8]
 
-
-def test_login_y_agregar_medicina(driver):
-    med_num = _get_next_medicine_suffix()
-    last_email_file = os.path.join(os.path.dirname(__file__), "qa_last_email.txt")
-    if os.path.exists(last_email_file):
-        with open(last_email_file, "r") as f:
-            email = f.read().strip()
-        print(f"\n[INFO] Email leido desde qa_last_email.txt: {email}")
-    else:
-        email = os.getenv("QA_EMAIL")
-        print(f"\n[INFO] qa_last_email.txt no encontrado, usando QA_EMAIL: {email}")
-
-    print(f"[INFO] Sufijo medicina esta ejecucion: {med_num}")
+def test_login_y_agregar_inventario(driver):
+    # 1. Obtener credenciales y sufijo de producto
+    email = _get_last_email()
     password = os.getenv("QA_PASSWORD")
+    prod_num = _get_next_product_suffix()
+    print(f"\n[INFO] Haciendo login con: {email}")
+    print(f"[INFO] Numero de producto esta ejecucion: {prod_num}")
+    print(f"[INFO] Resolución: 1366x768")
 
-    assert email, "No se encontro email en qa_last_email.txt ni en QA_EMAIL"
+    assert email, "La variable de entorno QA_EMAIL no esta definida"
     assert password, "La variable de entorno QA_PASSWORD no esta definida"
 
     # Abrir la pagina
@@ -73,64 +79,63 @@ def test_login_y_agregar_medicina(driver):
     print(f"\n[LOGIN] Mensaje de autenticacion: {auth_msg.text}")
     assert auth_msg.is_displayed()
 
-
-    # Navegar a la seccion de medicamentos (data-target="medicineSection")
-    btn_medicine_section = wait.until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-target="medicineSection"]'))
+    # Navegar a la seccion de medicamentos (mismo formulario)
+    btn_inventory_section = wait.until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-target="inventorySection"]'))
     )
-    btn_medicine_section.click()
-    print("\n[NAV] Seccion medicamentos abierta")
+    btn_inventory_section.click()
+    print("\n[NAV] Seccion inventario abierta")
 
-    # Esperar que la seccion de medicamentos sea visible
-    medicine_section = wait.until(
-        EC.visibility_of_element_located((By.ID, "medicineSection"))
+    # Esperar que la seccion sea visible
+    inventory_section = wait.until(
+        EC.visibility_of_element_located((By.ID, "inventorySection"))
     )
-    assert medicine_section.is_displayed(), "La seccion medicamentos no esta visible"
+    assert inventory_section.is_displayed(), "La seccion de inventario no esta visible"
 
-    # Hacer click en el boton 'Agregar producto' dentro de la seccion
+    # Hacer click en el boton 'Agregar producto'
     btn_add = wait.until(
-        EC.element_to_be_clickable((By.ID, "btnAddMedicine"))
+        EC.element_to_be_clickable((By.ID, "btnAddManual"))
     )
     btn_add.click()
-    print("\n[ACCION] Click en btnAddMedicine realizado")
+    print("\n[ACCION] Click en btnAddManual realizado")
 
-    # Esperar que el campo nombre sea visible (confirma que el formulario abrio)
+    # Esperar que el formulario abra (campo nombre visible)
     input_name = wait.until(
         EC.visibility_of_element_located((By.ID, "pName"))
     )
     print("\n[OK] Formulario de agregar producto visible")
     input_name.clear()
-    input_name.send_keys(f"Paracetamol Test {med_num}")
-    print(f"[FORM] pName ingresado: Paracetamol Test {med_num}")
+    input_name.send_keys(f"Producto Inventario Test {prod_num}")
+    print(f"[FORM] pName ingresado: Producto Inventario Test {prod_num}")
 
     # Marca
     input_brand = driver.find_element(By.ID, "pBrand")
     input_brand.clear()
-    input_brand.send_keys(f"Laboratorio QA {med_num}")
-    print(f"[FORM] pBrand ingresado: Laboratorio QA {med_num}")
+    input_brand.send_keys(f"Marca QA Inventario {prod_num}")
+    print(f"[FORM] pBrand ingresado: Marca QA Inventario {prod_num}")
 
-    # Tamano / cantidad  (valor negativo para verificar validacion)
+    # Tamaño / cantidad  (valor valido positivo)
     input_size = driver.find_element(By.ID, "pSize")
     input_size.clear()
-    input_size.send_keys("-5")
-    print("[FORM] pSize ingresado con valor negativo (-5) para verificar validacion")
+    input_size.send_keys("-2147483648")
+    print("[FORM] pSize ingresado con el entero negativo mas grande posible (-2147483648)")
 
-    # Fecha de vencimiento
+    # Fecha de vencimiento ya vencida (prueba de validacion de fecha)
     input_expiry = driver.find_element(By.ID, "pExpiry")
     input_expiry.clear()
-    input_expiry.send_keys("2025-12-31")
-    print("[FORM] pExpiry ingresado")
+    input_expiry.send_keys("2000-01-01")
+    print("[FORM] pExpiry ingresado con fecha vencida (2000-01-01)")
 
     # Precio unitario
     input_price = driver.find_element(By.ID, "pPrice")
     input_price.clear()
-    input_price.send_keys("990")
+    input_price.send_keys("1500")
     print("[FORM] pPrice ingresado")
 
     # Precio total
     input_price_total = driver.find_element(By.ID, "pPriceTotal")
     input_price_total.clear()
-    input_price_total.send_keys("4950")
+    input_price_total.send_keys("15000")
     print("[FORM] pPriceTotal ingresado")
 
     time.sleep(3)
@@ -143,4 +148,4 @@ def test_login_y_agregar_medicina(driver):
     print("\n[ACCION] Click en btnSaveProduct realizado")
 
     # Pausa de visualizacion para ver el resultado
-    time.sleep(15)
+    time.sleep(8)

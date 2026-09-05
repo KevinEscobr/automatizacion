@@ -133,3 +133,10 @@ automatizacion/
 selenium>=4.20
 pytest>=8.0
 ```
+
+---
+
+## Autores
+
+- **Johan Urrutia**
+- **Kevin Escobar**
