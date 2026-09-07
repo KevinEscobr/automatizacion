@@ -135,8 +135,3 @@ pytest>=8.0
 ```
 
 ---
-
-## Autores
-
-- **Johan Urrutia**
-- **Kevin Escobar**
